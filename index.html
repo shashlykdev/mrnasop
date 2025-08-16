@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SOP Control Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header>
+        <div class="topbar" role="navigation" aria-label="Primary">
+            <div class="brand">SOP Control Center</div>
+            <nav>
+                <a href="#action-tracker">Actions</a>
+                <a href="#calendar">Calendar</a>
+                <a href="#decision-tracker">Decisions</a>
+                <a href="#stakeholders">Stakeholders</a>
+                <a href="#ci">Continuous Improvement</a>
+                <a href="#timeline">Timeline</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main" class="grid" tabindex="-1">
+        <!-- ACTION TRACKER (Kanban) -->
+        <section id="action-tracker" class="card" aria-labelledby="action-h">
+            <div class="card__hd">
+                <div class="card__title" id="action-h">Action Tracker (Kanban)</div>
+                <div class="controls" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+                    <button class="btn btn--primary" id="newActionBtn" aria-haspopup="dialog">+ New Action</button>
+                    <button class="btn btn--muted" id="exportActionsBtn" title="Export actions as JSON">Export</button>
+                    <label style="display:flex; align-items:center; gap:.25rem; font-size:.875rem;">
+                        <input type="checkbox" id="showArchived" style="margin:0;"> Show Archived
+                    </label>
+                    <input id="searchActions" class="input" type="search" placeholder="Filter actions…"
+                        style="max-width:220px" aria-label="Filter actions" />
+                </div>
+            </div>
+            <div class="card__bd">
+                <div class="kanban" role="application" aria-label="Kanban board">
+                    <div class="col" data-col="todo" aria-label="To Do" aria-dropeffect="move">
+                        <div class="col__hd">To Do <span class="drp" id="count-todo"></span></div>
+                        <div class="col__bd" id="col-todo"></div>
+                    </div>
+                    <div class="col" data-col="doing" aria-label="In Progress" aria-dropeffect="move">
+                        <div class="col__hd">In Progress <span class="drp" id="count-doing"></span></div>
+                        <div class="col__bd" id="col-doing"></div>
+                    </div>
+                    <div class="col" data-col="review" aria-label="Review/Blocked" aria-dropeffect="move">
+                        <div class="col__hd">Review/Blocked <span class="drp" id="count-review"></span></div>
+                        <div class="col__bd" id="col-review"></div>
+                    </div>
+                    <div class="col" data-col="done" aria-label="Done" aria-dropeffect="move">
+                        <div class="col__hd">Done <span class="drp" id="count-done"></span></div>
+                        <div class="col__bd" id="col-done"></div>
+                    </div>
+                </div>
+                <div class="legend"
+                    style="margin-top:.75rem; display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+                    <span class="badge">Card types:</span>
+                    <span class="badge badge--alert" title="Alert / Blocker">Alert</span>
+                    <span class="badge badge--pending" title="Pending / Waiting">Pending</span>
+                    <span class="badge badge--done" title="Completed">Done</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CALENDAR -->
+        <section id="calendar" class="card" aria-labelledby="cal-h">
+            <div class="card__hd">
+                <div class="card__title" id="cal-h">Standard Calendar</div>
+            </div>
+            <div class="card__bd">
+                <div class="cal">
+                    <div class="cal__nav">
+                        <button class="btn" id="prevMonth" aria-label="Previous month"><i
+                                data-lucide="chevron-left"></i></button>
+                        <div id="calLabel" aria-live="polite"></div>
+                        <button class="btn" id="nextMonth" aria-label="Next month"><i
+                                data-lucide="chevron-right"></i></button>
+                    </div>
+                    <div class="cal__grid" id="calGrid" aria-label="Monthly calendar"></div>
+                    <form id="eventForm" class="fields" style="margin-top:.5rem;" aria-labelledby="eventFormH">
+                        <div class="col-12" id="eventFormH" style="font-weight:700">Quick add event</div>
+                        <div class="field col-6">
+                            <label for="evtDate">Date</label>
+                            <input id="evtDate" class="input" type="date" required />
+                        </div>
+                        <div class="field col-6">
+                            <label for="evtStatus">Meeting name</label>
+                            <select id="evtStatus" class="select">
+                                <option value="">Select meeting</option>
+                                <option value="site-sop">Site S&OP</option>
+                                <option value="cmo-sop">CMO S&OP</option>
+                                <option value="ds-sop">DS S&OP</option>
+                                <option value="requirement-review">Requirement Review</option>
+                                <option value="global-supply-review">Global Supply review</option>
+                                <option value="reconciliation-review">Reconciliation Review</option>
+                                <option value="esop">ES&OP</option>
+                            </select>
+                        </div>
+                        <div class="field col-12">
+                            <label for="evtTitle">Title</label>
+                            <input id="evtTitle" class="input" type="text" placeholder="e.g., Sprint review" required />
+                        </div>
+                        <div class="col-12" style="display:flex; gap:.5rem;">
+                            <button class="btn btn--primary" type="submit">Add Event</button>
+                            <button class="btn btn--muted" id="exportEventsBtn" type="button">Export</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- DECISION TRACKER -->
+        <section id="decision-tracker" class="card" aria-labelledby="dec-h">
+            <div class="card__hd">
+                <div class="card__title" id="dec-h">Decision Tracker</div>
+                <div class="controls" style="display:flex; gap:.5rem;">
+                    <button class="btn btn--primary" id="addDecisionBtn">+ New Decision</button>
+                    <button class="btn btn--muted" id="exportDecBtn">Export</button>
+                </div>
+            </div>
+            <div class="card__bd">
+                <div style="overflow:auto;">
+                    <table aria-describedby="decHelp">
+                        <thead>
+                            <tr>
+                                <th style="width:28%">Decision</th>
+                                <th>Owner</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th style="width:1%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="decTbody"></tbody>
+                    </table>
+                </div>
+                <div id="decHelp" class="visually-hidden">Track key SOP decisions, owners, and status.</div>
+                <form id="decForm" class="fields" style="margin-top: .75rem;">
+                    <div class="field col-12"><strong>Add decision</strong></div>
+                    <div class="field col-6">
+                        <label for="decTitle">Decision *</label>
+                        <input id="decTitle" class="input" required />
+                    </div>
+                    <div class="field col-3">
+                        <label for="decOwner">Owner *</label>
+                        <input id="decOwner" class="input" required />
+                    </div>
+                    <div class="field col-3">
+                        <label for="decDate">Date</label>
+                        <input id="decDate" type="date" class="input" />
+                    </div>
+                    <div class="field col-3">
+                        <label for="decStatus">Status</label>
+                        <select id="decStatus" class="select">
+                            <option>Proposed</option>
+                            <option>Approved</option>
+                            <option>Rejected</option>
+                            <option>Deprecated</option>
+                        </select>
+                    </div>
+                    <div class="field col-6">
+                        <label for="decRelatedEvent">Related Event</label>
+                        <select id="decRelatedEvent" class="select">
+                            <option value="">Select event (optional)</option>
+                        </select>
+                    </div>
+                    <div class="field col-6"></div>
+                    <div class="field col-12">
+                        <label for="decNotes">Notes</label>
+                        <input id="decNotes" class="input" placeholder="Context, alternatives, etc." />
+                    </div>
+                    <div class="col-12" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                        <button class="btn btn--primary" type="submit">Add</button>
+                        <button class="btn" type="reset">Reset</button>
+                        <button type="button" class="btn" id="createActionFromDecision" style="margin-left:auto;">
+                            <i data-lucide="target"></i> Create Action from Decision
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- STAKEHOLDER ROSTER -->
+        <section id="stakeholders" class="card" aria-labelledby="stk-h">
+            <div class="card__hd">
+                <div class="card__title" id="stk-h">Stakeholder Roster</div>
+                <div class="controls" style="display:flex; gap:.5rem;">
+                    <input id="stakeholderSearch" class="input" type="search" placeholder="Filter…"
+                        style="max-width:200px" aria-label="Filter stakeholders" />
+                    <button class="btn btn--primary" id="exportStkBtn">Export</button>
+                </div>
+            </div>
+            <div class="card__bd">
+                <div style="overflow:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:22%">Name</th>
+                                <th>Role</th>
+                                <th>Contact</th>
+                                <th>RACI</th>
+                                <th>Notes</th>
+                                <th style="width:1%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stkTbody"></tbody>
+                    </table>
+                </div>
+                <form id="stkForm" class="fields" style="margin-top:.75rem;">
+                    <div class="field col-12"><strong>Add stakeholder</strong></div>
+                    <div class="field col-4">
+                        <label for="stkName">Name *</label>
+                        <input id="stkName" class="input" required />
+                    </div>
+                    <div class="field col-4">
+                        <label for="stkRole">Role *</label>
+                        <input id="stkRole" class="input" required />
+                    </div>
+                    <div class="field col-4">
+                        <label for="stkContact">Contact</label>
+                        <input id="stkContact" class="input" />
+                    </div>
+                    <div class="field col-3">
+                        <label for="stkRaci">RACI</label>
+                        <select id="stkRaci" class="select">
+                            <option>R - Responsible</option>
+                            <option>A - Accountable</option>
+                            <option>C - Consulted</option>
+                            <option>I - Informed</option>
+                        </select>
+                    </div>
+                    <div class="field col-12">
+                        <label for="stkNotes">Notes</label>
+                        <input id="stkNotes" class="input" placeholder="Influence/interest, expectations, risks…" />
+                    </div>
+                    <div class="col-12" style="display:flex; gap:.5rem;">
+                        <button class="btn btn--primary" type="submit">Add</button>
+                        <button class="btn" type="reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- CONTINUOUS IMPROVEMENT -->
+        <section id="ci" class="card" aria-labelledby="ci-h">
+            <div class="card__hd">
+                <div class="card__title" id="ci-h">Continuous Improvement — Ideas & Feedback</div>
+                <div class="controls" style="display:flex; gap:.5rem;">
+                    <button class="btn btn--primary" id="addIdeaBtn">+ New Idea</button>
+                    <button class="btn btn--muted" id="exportIdeasBtn">Export</button>
+                </div>
+            </div>
+            <div class="card__bd">
+                <div id="ideasList" style="display:grid; gap:.5rem;"></div>
+            </div>
+        </section>
+
+        <!-- TIMELINE VIEW -->
+        <section id="timeline" class="card" aria-labelledby="timeline-h">
+            <div class="card__hd">
+                <div class="card__title" id="timeline-h">Timeline & Dependencies</div>
+                <div class="controls" style="display:flex; gap:.5rem;">
+                    <button class="btn" id="timelineViewBtn">Timeline View</button>
+                    <button class="btn" id="dependencyGraphBtn">Dependency Graph</button>
+                </div>
+            </div>
+            <div class="card__bd">
+                <div id="timelineContainer" style="min-height:300px;">
+                    <div id="timelineContent"></div>
+                </div>
+                <div id="dependencyContainer" style="min-height:300px; display:none;">
+                    <div id="dependencyGraph"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+            <span>Legend:</span>
+            <span class="badge badge--alert">Alert</span>
+            <span class="badge badge--pending">Pending</span>
+            <span class="badge badge--done">Done</span>
+            <span>— Use the Export buttons to back up to JSON. Data is stored locally in your browser.</span>
+        </div>
+    </footer>
+
+    <!-- Dialog: New Action -->
+    <dialog id="actionDlg"
+        style="border:1px solid var(--line); border-radius:12px; padding:0; max-width:560px; width:calc(100% - 2rem);">
+        <form method="dialog" id="actionForm">
+            <div class="card__hd">
+                <div class="card__title">New Action</div><button class="btn btn--link" value="cancel"
+                    aria-label="Close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="card__bd">
+                <div class="fields">
+                    <div class="field col-12"><label for="aTitle">Title *</label><input id="aTitle" class="input"
+                            required /></div>
+                    <div class="field col-6"><label for="aOwner">Owner *</label><input id="aOwner" class="input"
+                            required /></div>
+                    <div class="field col-3"><label for="aDue">Due</label><input id="aDue" type="date" class="input" />
+                    </div>
+                    <div class="field col-3"><label for="aType">Card type</label>
+                        <select id="aType" class="select">
+                            <option value="">Neutral</option>
+                            <option value="alert">Alert (red)</option>
+                            <option value="pending">Pending (orange)</option>
+                            <option value="done">Done (green)</option>
+                        </select>
+                    </div>
+                    <div class="field col-12"><label for="aNotes">Notes</label><textarea id="aNotes" class="textarea"
+                            rows="3"></textarea></div>
+                    <div class="field col-6"><label for="aRelatedEvent">Related Event</label>
+                        <select id="aRelatedEvent" class="select">
+                            <option value="">Select event (optional)</option>
+                        </select>
+                    </div>
+                    <div class="field col-6"><label for="aRelatedDecision">Related Decision</label>
+                        <select id="aRelatedDecision" class="select">
+                            <option value="">Select decision (optional)</option>
+                        </select>
+                    </div>
+                    <div class="field col-12"><label for="aCol">Column</label>
+                        <select id="aCol" class="select">
+                            <option value="todo">To Do</option>
+                            <option value="doing">In Progress</option>
+                            <option value="review">Review/Blocked</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; gap:.5rem; justify-content:flex-end; margin-top:.75rem;">
+                    <button class="btn" value="cancel">Cancel</button>
+                    <button class="btn btn--primary" id="saveActionBtn" value="default">Save</button>
+                </div>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Dialog: New Idea -->
+    <dialog id="ideaDlg"
+        style="border:1px solid var(--line); border-radius:12px; padding:0; max-width:560px; width:calc(100% - 2rem);">
+        <form method="dialog" id="ideaForm">
+            <div class="card__hd">
+                <div class="card__title">New Idea / Feedback</div><button class="btn btn--link" value="cancel"
+                    aria-label="Close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="card__bd">
+                <div class="fields">
+                    <div class="field col-12"><label for="iTitle">Title *</label><input id="iTitle" class="input"
+                            required /></div>
+                    <div class="field col-12"><label for="iDesc">Description</label><textarea id="iDesc"
+                            class="textarea" rows="4"></textarea></div>
+                    <div class="field col-6"><label for="iStatus">Status</label>
+                        <select id="iStatus" class="select">
+                            <option>Idea</option>
+                            <option>Under review</option>
+                            <option>Accepted</option>
+                            <option>Implemented</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; gap:.5rem; justify-content:flex-end; margin-top:.75rem;">
+                    <button class="btn" value="cancel">Cancel</button>
+                    <button class="btn btn--primary" id="saveIdeaBtn" value="default">Save</button>
+                </div>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Dialog: Event Details -->
+    <dialog id="eventDetailsDlg"
+        style="border:1px solid var(--line); border-radius:12px; padding:0; max-width:600px; width:calc(100% - 2rem);">
+        <form method="dialog" id="eventDetailsForm">
+            <div class="card__hd">
+                <div class="card__title" id="eventDialogTitle">Event Details</div>
+                <button class="btn btn--link" value="cancel" aria-label="Close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="card__bd">
+                <div class="fields">
+                    <div class="field col-12">
+                        <label for="eventTitle">Title *</label>
+                        <input id="eventTitle" class="input" required />
+                    </div>
+                    <div class="field col-6">
+                        <label for="eventDate">Date *</label>
+                        <input id="eventDate" class="input" type="date" required />
+                    </div>
+                    <div class="field col-6">
+                        <label for="eventMeeting">Meeting name</label>
+                        <select id="eventMeeting" class="select">
+                            <option value="">Select meeting</option>
+                            <option value="site-sop">Site S&OP</option>
+                            <option value="cmo-sop">CMO S&OP</option>
+                            <option value="ds-sop">DS S&OP</option>
+                            <option value="requirement-review">Requirement Review</option>
+                            <option value="global-supply-review">Global Supply review</option>
+                            <option value="reconciliation-review">Reconciliation Review</option>
+                            <option value="esop">ES&OP</option>
+                        </select>
+                    </div>
+                    <div class="field col-12">
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" class="textarea" rows="3" placeholder="Meeting agenda, notes, or description"></textarea>
+                    </div>
+                    <div class="field col-12">
+                        <label for="eventFiles">Attachments</label>
+                        <input id="eventFiles" class="input" type="file" multiple accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" />
+                        <div id="eventFilesList" style="margin-top:.5rem;"></div>
+                    </div>
+                    <div class="field col-12">
+                        <label for="eventTranscript">Transcript</label>
+                        <textarea id="eventTranscript" class="textarea" rows="4" placeholder="Paste meeting transcript here for AI summarization"></textarea>
+                        <div style="display:flex; gap:.5rem; margin-top:.5rem;">
+                            <input id="transcriptFile" type="file" accept=".txt,.doc,.docx" style="display:none;" />
+                            <button type="button" class="btn" id="uploadTranscriptBtn">
+                                <i data-lucide="upload"></i> Upload Transcript
+                            </button>
+                            <button type="button" class="btn" id="summarizeBtn" style="display:none;">
+                                <i data-lucide="zap"></i> Summarize with AI
+                            </button>
+                        </div>
+                    </div>
+                    <div class="field col-12" id="summaryField" style="display:none;">
+                        <label for="eventSummary">AI Summary</label>
+                        <div id="eventSummary" class="input" style="min-height:100px; background:#f8f9fa; border-style:dashed;"></div>
+                    </div>
+                    <div class="field col-12" id="workflowActions" style="display:none; border-top:1px solid var(--line); padding-top:1rem; margin-top:1rem;">
+                        <label style="font-weight:500; margin-bottom:.5rem; display:block;">Quick Actions (Event Workflow)</label>
+                        <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                            <button type="button" class="btn" id="createDecisionFromEvent">
+                                <i data-lucide="scale"></i> Create Decision
+                            </button>
+                            <button type="button" class="btn" id="createActionFromEvent">
+                                <i data-lucide="target"></i> Create Action
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:.5rem; justify-content:space-between; margin-top:.75rem;">
+                    <button type="button" class="btn btn--link" id="deleteEventBtn" style="color:var(--red); display:none;">
+                        <i data-lucide="trash-2"></i> Delete Event
+                    </button>
+                    <div style="display:flex; gap:.5rem;">
+                        <button class="btn" value="cancel">Cancel</button>
+                        <button class="btn btn--primary" id="saveEventBtn" value="default">Save Event</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </dialog>
+
+    <div id="live" class="visually-hidden" role="status" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
